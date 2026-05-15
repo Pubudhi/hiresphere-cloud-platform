@@ -21,7 +21,8 @@ app.post("/submissions/github", (req, res) => {
   const submission = {
     id: Date.now().toString(),
     candidateName: req.body.candidateName,
-    githubLink: req.body.githubLink
+    githubLink: req.body.githubLink,
+    submittedAt: new Date()
   };
 
   submissions.push(submission);

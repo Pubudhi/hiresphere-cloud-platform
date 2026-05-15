@@ -18,7 +18,9 @@ app.post("/bookings", (req, res) => {
     id: Date.now().toString(),
     candidateName: req.body.candidateName,
     interviewerName: req.body.interviewerName,
+    interviewType: req.body.interviewType,
     date: req.body.date,
+    time: req.body.time,
     status: "CONFIRMED"
   };
 
