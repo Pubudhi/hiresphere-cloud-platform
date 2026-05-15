@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: booking-service
-          image: booking-service:latest
+          image: 619924817249.dkr.ecr.ap-southeast-1.amazonaws.com/hiresphere/booking-service:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3002
