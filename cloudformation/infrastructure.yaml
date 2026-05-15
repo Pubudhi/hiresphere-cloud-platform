@@ -1,0 +1,111 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HireSphere Cloud Infrastructure - MVP
+
+Resources:
+
+  HireSphereUploadsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "hiresphere-uploads-${AWS::AccountId}-${AWS::Region}"
+
+  ProfilesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HireSphereProfiles
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: profileId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: profileId
+          KeyType: HASH
+
+  BookingsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HireSphereBookings
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: bookingId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: bookingId
+          KeyType: HASH
+
+  SubmissionsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: HireSphereSubmissions
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: submissionId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: submissionId
+          KeyType: HASH
+
+  HireSphereUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: HireSphereUserPool
+      AutoVerifiedAttributes:
+        - email
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireUppercase: true
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: false
+
+  HireSphereUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: HireSphereWebClient
+      UserPoolId: !Ref HireSphereUserPool
+      GenerateSecret: false
+      ExplicitAuthFlows:
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+        - ALLOW_USER_SRP_AUTH
+
+  ProfileServiceECR:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: hiresphere/profile-service
+
+  BookingServiceECR:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: hiresphere/booking-service
+
+  SubmissionServiceECR:
+    Type: AWS::ECR::Repository
+    Properties:
+      RepositoryName: hiresphere/submission-service
+
+Outputs:
+
+  UploadsBucketName:
+    Description: S3 bucket for submission uploads
+    Value: !Ref HireSphereUploadsBucket
+
+  ProfilesTableName:
+    Description: DynamoDB table for profiles
+    Value: !Ref ProfilesTable
+
+  BookingsTableName:
+    Description: DynamoDB table for bookings
+    Value: !Ref BookingsTable
+
+  SubmissionsTableName:
+    Description: DynamoDB table for submissions
+    Value: !Ref SubmissionsTable
+
+  CognitoUserPoolId:
+    Description: Cognito User Pool ID
+    Value: !Ref HireSphereUserPool
+
+  CognitoUserPoolClientId:
+    Description: Cognito App Client ID
+    Value: !Ref HireSphereUserPoolClient
